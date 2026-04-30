@@ -1,25 +1,35 @@
+/* ===== BODY ===== */
 body {
-    background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+    background: linear-gradient(135deg, #0f0f23, #1a1a2e, #16213e);
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    font-family: 'SF Pro Display', -apple-system, sans-serif;
     margin: 0;
+    font-family: 'SF Pro Display', -apple-system, sans-serif;
     color: #f0f0f0;
 }
 
+/* ===== MAIN LAYOUT (SIDE BY SIDE) ===== */
+.app-layout {
+    display: flex;
+    gap: 25px;
+    align-items: flex-start;
+}
+
+/* ===== CALCULATOR ===== */
 .calc-container {
+    flex: 0 0 380px;
     background: rgba(17, 24, 39, 0.95);
     backdrop-filter: blur(20px);
     border-radius: 32px;
     padding: 24px;
-    box-shadow: 0 25px 50px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
-    width: 380px;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.5),
+                inset 0 1px 0 rgba(255,255,255,0.1);
     border: 1px solid rgba(255,255,255,0.1);
 }
 
+/* ===== HEADER ===== */
 .header {
     display: flex;
     justify-content: space-between;
@@ -38,12 +48,10 @@ body {
     padding: 4px 12px;
     border-radius: 20px;
     font-size: 12px;
-    transition: all 0.2s;
 }
 
 .mode.active {
     background: #3b82f6;
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
 }
 
 .shift {
@@ -53,9 +61,9 @@ body {
     padding: 6px 12px;
     border-radius: 16px;
     font-size: 11px;
-    font-weight: 600;
 }
 
+/* ===== DISPLAY ===== */
 #display {
     width: 100%;
     height: 80px;
@@ -64,71 +72,116 @@ body {
     background: rgba(6, 7, 23, 0.8);
     border: 1px solid rgba(255,255,255,0.1);
     border-radius: 20px;
-    padding: 0px;
+    padding: 10px;
     margin-bottom: 20px;
     color: #fff;
     box-shadow: inset 0 4px 12px rgba(0,0,0,0.3);
-    transition: all 0.2s;
 }
 
+/* ===== BUTTON GRID ===== */
 .buttons {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     gap: 12px;
 }
 
+/* ===== BUTTONS ===== */
 button {
     height: 56px;
     border-radius: 20px;
     border: none;
     font-size: 18px;
-    font-weight: 500;
     cursor: pointer;
-    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
     background: rgba(55, 65, 81, 0.6);
     color: #f9fafb;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-    position: relative;
-    overflow: hidden;
+    transition: 0.2s;
 }
 
 button:active {
-    transform: scale(0.96) translateY(2px);
-    box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+    transform: scale(0.96);
 }
 
+.zero {
+    grid-column: span 2;
+}
+
+/* SHIFT LABEL */
 button.shifted::after {
     content: attr(data-shift);
     position: absolute;
     top: 4px;
-    right: 4px;
+    right: 6px;
     font-size: 10px;
     color: #ec4899;
-    opacity: 0.8;
 }
 
-.zero { grid-column: span 2; }
+/* ===== HISTORY (RIGHT SIDE) ===== */
+.history {
+    flex: 0 0 260px;
+    height: 600px;
+    overflow-y: auto;
 
-.graph-container, .history {
-    margin-top: 24px;
-    background: rgba(17, 24, 39, 0.8);
-    border-radius: 20px;
-    padding: 20px;
-    max-width: 400px;
+    background: rgba(17, 24, 39, 0.95);
+    border-radius: 24px;
+    padding: 16px;
+
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
 }
 
-#graph { border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
-
-.history ul { list-style: none; padding: 0; max-height: 200px; overflow-y: auto; }
+/* HISTORY ITEMS */
+.history ul {
+    list-style: none;
+    padding: 0;
+}
 
 .history li {
-    padding: 12px;
-    border-radius: 12px;
+    padding: 10px;
     margin-bottom: 8px;
+    border-radius: 10px;
     cursor: pointer;
-    transition: background 0.2s;
     font-family: monospace;
     font-size: 14px;
 }
 
-.history li:hover { background: rgba(59, 130, 246, 0.2); }
+.history li:hover {
+    background: rgba(59, 130, 246, 0.2);
+}
+
+/* ===== GRAPH ===== */
+.graph-container {
+    margin-top: 20px;
+    text-align: center;
+}
+
+#graph {
+    border-radius: 12px;
+    background: white;
+}
+
+/* ===== MOBILE ===== */
+@media (max-width: 768px) {
+    .app-layout {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .history {
+        width: 100%;
+        height: auto;
+    }
+}
+
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.clear-btn {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 10px;
+    cursor: pointer;
+}

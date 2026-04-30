@@ -16,10 +16,17 @@ def home():
 def calculate():
     data = request.json
     expr = data.get("expression")
+    mode = data.get("mode", "RAD")
 
     try:
         # Replace UI symbols safely
         expr = expr.replace('π', 'pi').replace('e', 'E')
+
+        # Handle degree mode for trig functions
+        if mode == "DEG":
+            expr = expr.replace('sin(', 'sin(deg(').replace('cos(', 'cos(deg(').replace('tan(', 'tan(deg(')
+            # Close the deg functions
+            expr = expr.replace(')', '))')
 
         result = sympify(expr).evalf()
 

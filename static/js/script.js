@@ -3,6 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // ================= GLOBALS =================
 let isShift = false;
 let isDeg = true;
+const HISTORY_KEY = "calcHistory";
 const display = document.getElementById("display");
 
 // ================= INIT =================
@@ -41,7 +42,6 @@ function insertAtCursor(val) {
 window.press = function(val) {
     if (val === "×") val = "*";
     if (val === "÷") val = "/";
-    if (val === "π") val = "pi";
 
     insertAtCursor(val);
 }
@@ -203,6 +203,7 @@ window.solveEquation = function() {
 // ================= HISTORY =================
 function addToHistory(exp, res) {
     let list = document.getElementById("historyList");
+    if (!list) return;
 
     let item = document.createElement("li");
     item.textContent = exp + " = " + res;
@@ -213,8 +214,12 @@ function addToHistory(exp, res) {
     };
 
     list.prepend(item);
-}
 
+    // Save to local storage
+    let history = JSON.parse(localStorage.getItem(HISTORY_KEY)) || [];
+    history.unshift(exp + " = " + res);
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+}
 // ================= VOICE INPUT =================
 function startVoice() {
 
@@ -269,6 +274,45 @@ function convertSpeechToMath(text) {
         .replace(/pi/g, "pi")
         .replace(/ /g, "");
 }
+
+function saveHistory() {
+    let items = [];
+    document.querySelectorAll("#historyList li").forEach(li => {
+        items.push(li.innerHTML);
+    });
+
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(items));
+}
+
+function loadHistory() {
+    let data = localStorage.getItem(HISTORY_KEY);
+    if (!data) return;
+
+    let items = JSON.parse(data);
+    let list = document.getElementById("historyList");
+
+    items.forEach(item => {
+        let li = document.createElement("li");
+        li.textContent = item;
+
+        li.onclick = () => {
+            display.value = item.split(" = ")[0];
+            display.focus();
+        };
+
+        list.appendChild(li);
+    });
+}
+
+window.clearHistory = function() {
+    let list = document.getElementById("historyList");
+    if (list) {
+        list.innerHTML = "";
+    }
+    localStorage.removeItem(HISTORY_KEY);
+}
+
+loadHistory();
 
 // ================= TOGGLE HISTORY =================
 window.toggleHistory = function() {
