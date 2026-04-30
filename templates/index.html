@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pro Scientific Calculator</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="calc-container">
+        <div class="header">
+            <span>Scientific</span>
+            <div class="modes">
+                <button id="degBtn" class="mode active">DEG</button>
+                <button id="radBtn" class="mode">RAD</button>
+            </div>
+            <button id="shiftBtn" class="shift">2nd</button>
+        </div>
+        
+        <input type="text" id="display">
+        
+        <div class="buttons">
+            <!-- Row 1: Memory & Clear -->
+            <button onclick="mem('MC')">MC</button>
+            <button onclick="mem('MR')">MR</button>
+            <button onclick="mem('M-')">M-</button>
+            <button onclick="mem('M+')">M+</button>
+            <button onclick="clearDisplay()">C</button>
+            
+            <!-- Row 2: Constants & Basics -->
+            <button onclick="press('π')">π</button>
+            <button onclick="press('e')">e</button>
+            <button onclick="press('(')">(</button>
+            <button onclick="press(')')">)</button>
+            <button onclick="backspace()">⌫</button>
+            
+            <!-- Row 3: Powers & Logs -->
+            <button class="shifted" data-main="**2" data-shift="!">x²</button>
+            <button class="shifted" data-main="**" data-shift="exp(")>xʸ</button>
+            <button onclick="press('sqrt(')">√</button>
+            <button class="shifted" data-main="log(" data-shift="log(")>log</button>
+            <button onclick="press('/')">÷</button>
+            
+            <!-- Row 4: Trig -->
+            <button class="shifted" data-main="sin(" data-shift="asin(")>sin</button>
+            <button class="shifted" data-main="cos(" data-shift="acos(")>cos</button>
+            <button class="shifted" data-main="tan(" data-shift="atan(")>tan</button>
+            <button onclick="press('*')">×</button>
+            <button onclick="press('-')">−</button>
+            
+            <!-- Row 5: Numbers & Equals -->
+            <button onclick="press('7')">7</button>
+            <button onclick="press('8')">8</button>
+            <button onclick="press('9')">9</button>
+            <button onclick="press('+')">+</button>
+            <button onclick="calculate()">=</button>
+            
+            <button onclick="press('4')">4</button>
+            <button onclick="press('5')">5</button>
+            <button onclick="press('6')">6</button>
+            <button></button>
+            
+            <button onclick="press('1')">1</button>
+            <button onclick="press('2')">2</button>
+            <button onclick="press('3')">3</button>
+            <button onclick="press('0')" class="zero">0</button>
+            
+            <button onclick="press('.')">.</button>
+            <button onclick="plotGraph()">Graph</button>
+            <button onclick="solveEquation()">Solve</button>
+            <button onclick="toggleHistory()">Hist</button>
+            <button onclick="startVoice()">🎙</button>
+        </div>
+    </div>
+    
+    <div class="graph-container" id="graphCont" style="display:none;">
+        <img id="graph" width="400">
+    </div>
+    
+    <div class="history" id="history" style="display:none;">
+        <h3>History</h3>
+        <ul id="historyList"></ul>
+    </div>
+
+    <script src="/static/js/script.js"></script>
+</body>
+</html>
