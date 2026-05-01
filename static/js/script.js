@@ -3,6 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // ================= GLOBALS =================
 let isShift = false;
 let isDeg = true;
+let memory = 0.0;
 const HISTORY_KEY = "calcHistory";
 const display = document.getElementById("display");
 
@@ -21,6 +22,7 @@ function toggleMode(deg) {
     isDeg = deg;
     document.getElementById('degBtn').classList.toggle('active', deg);
     document.getElementById('radBtn').classList.toggle('active', !deg);
+    nerdamer.set('ANGLE_MODE', deg ? 'DEGREE' : 'RADIANS');
 }
 
 // ================= INSERT =================
@@ -83,22 +85,17 @@ function fixExpression(exp) {
 window.calculate = function() {
     let exp = fixExpression(display.value);
 
-    fetch("/calculate", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({
-            expression: exp,
-            mode: isDeg ? "DEG" : "RAD"
-        })
-    })
-    .then(res => res.json())
-    .then(data => {
-        display.value = data.result;
+    try {
+        let result = nerdamer(exp).evaluate();
+        let resText = result.text();
+        display.value = resText;
 
-        if (data.result !== "Error") {
-            addToHistory(exp, data.result);
+        if (resText !== "Error") {
+            addToHistory(exp, resText);
         }
-    });
+    } catch (e) {
+        display.value = "Error";
+    }
 }
 
 // ================= KEYBOARD =================
@@ -149,15 +146,10 @@ document.addEventListener("keydown", (e) => {
 window.mem = function(op) {
     const val = parseFloat(display.value) || 0;
 
-    fetch("/memory", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({ op, value: val })
-    })
-    .then(res => res.json())
-    .then(data => {
-        display.value = data.result;
-    });
+    if (op === "M+") memory += val;
+    else if (op === "M-") memory -= val;
+    else if (op === "MR") display.value = memory.toString();
+    else if (op === "MC") memory = 0;
 }
 
 // ================= SHIFT BUTTONS =================
@@ -172,32 +164,38 @@ document.querySelectorAll('.shifted').forEach(btn => {
 
 // ================= GRAPH =================
 window.plotGraph = function() {
-    fetch("/plot", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({ expression: display.value })
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.image) {
-            document.getElementById("graph").src =
-                data.image + "?t=" + Date.now();
-            document.getElementById("graphCont").style.display = "block";
+    let exp = display.value;
+    try {
+        let func = nerdamer(exp);
+        let x_vals = [];
+        let y_vals = [];
+        for (let x = -10; x <= 10; x += 0.1) {
+            try {
+                let y = func.evaluate({x: x}).text();
+                x_vals.push(x);
+                y_vals.push(parseFloat(y));
+            } catch (e) {
+                // skip invalid points
+            }
         }
-    });
+        let data = [{x: x_vals, y: y_vals, type: 'scatter'}];
+        Plotly.newPlot('graph', data);
+        document.getElementById('graphCont').style.display = 'block';
+    } catch (e) {
+        alert("Error plotting: " + e.message);
+    }
 }
 
 // ================= SOLVE =================
 window.solveEquation = function() {
-    fetch("/solve", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({ expression: display.value })
-    })
-    .then(res => res.json())
-    .then(data => {
-        display.value = data.result;
-    });
+    let exp = display.value;
+    try {
+        let result = nerdamer.solve(exp, 'x');
+        display.value = result.text();
+        addToHistory(exp, result.text());
+    } catch (e) {
+        display.value = "Error";
+    }
 }
 
 // ================= HISTORY =================
